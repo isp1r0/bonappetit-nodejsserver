@@ -1,0 +1,6 @@
+/out
+/node_modules
+/config.js
+/models/querybuilder_mariasql.js
+/.idea
+/ssl

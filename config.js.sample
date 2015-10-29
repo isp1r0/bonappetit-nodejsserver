@@ -1,0 +1,34 @@
+module.exports = {
+	http: {
+		port: 4433,
+		tlsenabled: false
+	},
+	security: {
+		tlscert: {
+			key: "",
+			cert: "",
+			passphrase: ""
+		},
+		pwhashingsalt: ""
+	}
+	db: {
+		server: "",
+		port: 0,
+		credential: {
+			user: "",
+			password: ""
+		},
+		dbname: ""
+	},
+	session: {
+		name: "ba_token",
+		secret: "",
+		unset: "destroy",
+		cookie: {
+			maxAge: (14 * 24 * 60 * 60) * 1000 //in seconds
+		},
+		usedb: true,
+		saveUninitialized: false,
+		resave: false
+	}
+}

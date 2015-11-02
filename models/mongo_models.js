@@ -76,7 +76,11 @@ var MallSchema = new mongoose.Schema({
 		lat: { type: Number },
 		long: { type: Number }
 	},
-	maptile: { type: String },
+	maptile: {
+		image: { type: String },
+		northangle: { type: Number },
+		scale: { type: Number }
+	},
 	beacondat: { type: String }
 });
 

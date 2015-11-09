@@ -1,10 +1,10 @@
 var mongoose = require('mongoose');
 
 var UserSchema = new mongoose.Schema({
-	name: { type: String, required: true, unique: true },
-	pwhash: { type: String, required: true, select: false },
-	email: { type: String, required: true },
-	createdate: { type: Date, required: true },
+	name: { type: String, unique: true },
+	pwhash: { type: String, select: false },
+	email: { type: String },
+	createdate: { type: Date },
 	isvendor: { type: Boolean },
 	ownedshop: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendors' },
 	favorites: {

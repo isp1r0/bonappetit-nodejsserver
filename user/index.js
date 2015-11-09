@@ -10,7 +10,7 @@ module.exports = function(database)
 			Input parameters: JSONObject( {username, password} )
 		GET /user/logout			-> logout
 
-		GET /user/	 				-> return user data
+		GET /user/	 				-> return currently logged in user data
 		POST /user/ 				-> create new user
 			Input parameters: JSONObject( {username, password, email} )
 		PUT /user/				-> update user data
@@ -34,12 +34,12 @@ module.exports = function(database)
 		//TODO: userdoc populate path
 		var completedUserJson = userdoc.toObject();
 		delete completedUserJson.pwhash;
-		if (typeof cartdoc == "undefined") CartModel.findById(userdoc.cart, (err, doc) => { cartdoc = doc; });
+		if (typeof cartdoc == "undefined") CartModel.findById(userdoc.cart, (e, doc) => { cartdoc = doc; });
 		completedUserJson.cart = cartdoc.toObject();
 		return completedUserJson;
 	}
 
-	userRouter.post('/authenticate', function(req, res) {
+	userRouter.post('/authenticate', (req, res) => {
 		if (req.session && req.session.u) {
 			res.status(304);//json({ status: 304, message: "You are already authenticated!" });
 			return;
@@ -48,8 +48,8 @@ module.exports = function(database)
 			res.json({ message:"Invaild query"});
 			return;
 		}
-		UserModel.findOne({ name: req.body.username }, '+pwhash', function(err, au) {
-			if (err) {
+		UserModel.findOne({ name: req.body.username }, '+pwhash', (e, au) => {
+			if (e) {
 				res.status(500).json({ status: 401, message: "Server side error" });
 				return;
 			}
@@ -62,16 +62,16 @@ module.exports = function(database)
 		});
 	});
 
-	userRouter.get('/logout', checkAuth, function(req, res) {
+	userRouter.get('/logout', checkAuth, (req, res) => {
 		CartModel.findByIdAndUpdate(req.session.u.cart, req.session.cart.content).exec();
 		req.session.destroy();
 		res.status(200).end();
 	});
 
 	userRouter.route('/')
-		.get(checkAuth, function(req, res) {
-			UserModel.findById(req.session.u._id, function(err, ru) {
-				if (err) res.status(500).json({ status: 401, message: "Server side error" });
+		.get(checkAuth, (req, res) => {
+			UserModel.findById(req.session.u._id, (e, ru) => {
+				if (e) res.status(500).json({ status: 401, message: "Server side error" });
 				var oru = prepareCompleteUserJson(ru);
 				req.session.u = ru;
 				req.session.cart = oru.cart;
@@ -79,47 +79,50 @@ module.exports = function(database)
 				res.status(200).json(oru);
 			});
 		})
-		.post(function(req, res) {
+		.post((req, res) => {
 			if (req.session && req.session.u) {
 				res.status(304).json({ status: 304, message: "You are already our user!" });
 				return;
 			}
 
-			UserModel.findOne({
-					$or : [
+			UserModel.findOne(
+				{$or : [
 						{ name: req.body.username },
 						{ email: req.body.email }
-					]
-			}, function (err, doc) {
-				if (doc) {
-					res.status(400).json({ status: 400, message: "User with specified username or email is exist." });
-					return;
+				]},
+				(err, doc) => {
+					if (doc) {
+						res.status(400).json({ status: 400, message: "User with specified username or email is exist." });
+						return;
+					}
+					var newUser = new UserModel({
+						name: req.body.username,
+						pwhash: sha2hash().update(req.body.password + salt).digest('hex'),
+						email: req.body.email,
+						createdate: Date.now(),
+						isvendor: false,
+						ownedshop: null,
+						favorites: { shop: [], dishes:[] },
+						cart: null
+					});
+					var newCart = new CartModel({
+						owner: newUser._id,
+						content: []
+					});
+					newUser.cart = newCart._id;
+					newCart.save((e, c) => {
+						newUser.save((e, u) => {
+							req.session.cart = c.toObject();
+							req.session.u = u;
+							req.session.save();
+							var onu = prepareCompleteUserJson(u, c);
+							res.status(201).json(onu);
+						});
+					});
 				}
-				var newUser = new UserModel({
-					name: req.body.username,
-					pwhash: sha2hash().update(req.body.password + salt).digest('hex'),
-					email: req.body.email,
-					createdate: Date.now(),
-					isvendor: false,
-					ownedshop: null,
-					favorites: { shop: [], dishes:[] },
-					cart: null
-				});
-				var newCart = new CartModel({
-					owner: newUser._id,
-					content: []
-				});
-				newUser.cart = newCart._id;
-				newCart.save(function(err, c) { req.session.cart = c.toObject(); });
-				newUser.save(function(err, nu) {
-					req.session.u = nu;
-					req.session.save();
-					var onu = prepareCompleteUserJson(nu);
-					res.status(201).json(onu);
-				});
-			});
+			);
 		})
-		.put(checkAuth, function(req, res) {
+		.put(checkAuth, (req, res) => {
 			var update = {};
 			if (req.body.newemail != "") update.email = req.body.newmail;
 			if (req.body.newpw != "") {
@@ -130,15 +133,15 @@ module.exports = function(database)
 				update.pwhash = sha2hash().update(req.body.newpw + salt).digest('hex');
 			}
 
-			UserModel.findByIdAndUpdate(req.session.u._id, update, function(err, u) {
-				if (err) res.status(500).json({ status: 500, message: "Server side error" });
+			UserModel.findByIdAndUpdate(req.session.u._id, update, (e, u) => {
+				if (e) res.status(500).json({ status: 500, message: "Server side error" });
 				req.session.u = u;
 				req.session.save();
 				res.status(200).end();
 			});
 		})
-		.delete(checkAuth, function(req, res) {
-			UserModel.findByIdAndRemove(req.session.u._id, function(err, rmu) {
+		.delete(checkAuth, (req, res) => {
+			UserModel.findByIdAndRemove(req.session.u._id, (err, rmu) => {
 				CartModel.findByIdAndRemove(rmu.cart).exec();
 			});
 			res.redirect('/logout');

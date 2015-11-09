@@ -55,9 +55,14 @@ app.use(slash());
 app.use(errorHandler());
 app.use(uncapitalizer());
 app.use('/user', api_paths.user(database));
-//app.use('/vendor', api_paths.vendor(database));
-//app.use('/dish', api_paths.dish(database));
 app.use('/cart', api_paths.cart(database));
+/*app.use('/vendor', api_paths.vendor(database));
+app.use('/dish', api_paths.dish(database));
+app.use('/mall', ...);
+app.use('/ro/vendor', ...);
+app.use('/ro/dish', ...);
+app.use('/ro/mall', ...);
+*/
 
 if (config.http.tlsenabled) {
 	var https = require('https'),

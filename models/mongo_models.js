@@ -1,10 +1,11 @@
 var mongoose = require('mongoose');
 
 var UserSchema = new mongoose.Schema({
+	username: { type: String },
 	name: { type: String, unique: true },
 	pwhash: { type: String, select: false },
 	email: { type: String },
-	createdate: { type: Date },
+	createdate: { type: Number },
 	isvendor: { type: Boolean },
 	ownedshop: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendors' },
 	favorites: {
@@ -26,6 +27,7 @@ var CartSchema = new mongoose.Schema({
 
 var VendorSchema = new mongoose.Schema({
 	owner: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
+	name: { type: String },
 	category: { type: mongoose.Schema.Types.ObjectId, ref: 'Categories' },
 	description: { type: String },
 	pictures: [
@@ -67,7 +69,7 @@ var OrderSchema = new mongoose.Schema({
 
 var CategorySchema = new mongoose.Schema({
 	name: { type: String },
-	flagpic: { type: String }
+	icon: { type: String }
 });
 
 var MallSchema = new mongoose.Schema({

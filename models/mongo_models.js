@@ -75,8 +75,8 @@ var CategorySchema = new mongoose.Schema({
 var MallSchema = new mongoose.Schema({
 	name: { type: String },
 	location: {
-		lat: { type: Number },
-		long: { type: Number }
+		type: {type: String},
+		coordinates: {type: [Number], index: '2dsphere'}
 	},
 	maptile: {
 		image: { type: String },

@@ -43,16 +43,22 @@ module.exports = function(database)
 			res.status(401).json({status: 401, message: msg.ERR_CREDINVALID});
 			return;
 		}
-		UserModel.findOne({ name: req.body.username }, '+pwhash', (e, au) => {
+		UserModel.findOne({username: req.body.username}, '+pwhash').populate('cart').exec((e, au) => {
 			if (e) {
 				res.status(500).json({status: 500, message: msg.ERR_SERERROR});
 				return;
 			}
 			if (sha2hash().update(req.body.password + salt).digest('hex') == au.pwhash) {
-				var oau = prepareCompleteUserJson(au);
-				req.session.u = au;
-				req.session.cart = oau.cart;
-				res.status(200).json(oau);
+				DishModel.populate(au, 'cart.content.item', function (err, u) {
+					VendorModel.populate(u, 'cart.content.item.owner', function (err, u) {
+						DishModel.populate(u, 'cart.content.item.owner.dishes', function (err, u) {
+							delete u.pwhash;
+							req.session.u = u;
+							req.session.cart = u.cart;
+							res.status(200).json(u);
+						});
+					});
+				});
 			} else res.status(401).json({status: 401, message: msg.ERR_CREDINVALID});
 		});
 	});
@@ -64,16 +70,21 @@ module.exports = function(database)
 
 	userRouter.route('/')
 		.get(checkAuth, (req, res) => {
-			UserModel.findById(req.session.u._id, (e, ru) => {
-				var oru = prepareCompleteUserJson(ru);
-				req.session.u = ru;
-				req.session.cart = oru.cart;
-				req.session.save();
-				res.status(200).json(oru);
+			UserModel.findById(req.session.u._id).populate('cart').exec((e, ru) => {
 				if (e) {
 					res.status(500).json({status: 500, message: msg.ERR_SERERROR});
 					return;
 				}
+				DishModel.populate(ru, 'cart.content.item', function (err, u) {
+					VendorModel.populate(u, 'cart.content.item.owner', function (err, u) {
+						DishModel.populate(u, 'cart.content.item.owner.dishes', function (err, u) {
+							req.session.u = u;
+							req.session.cart = u.cart;
+							req.session.save();
+							res.status(200).json(u);
+						});
+					});
+				});
 			});
 		})
 		.post((req, res) => {

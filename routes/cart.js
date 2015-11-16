@@ -1,5 +1,6 @@
 var cartRouter = require('express').Router(),
-	mongoose = require('mongoose');
+	mongoose = require('mongoose'),
+	msg = require('../messages.js');
 
 module.exports = function(database)
 {
@@ -17,12 +18,16 @@ module.exports = function(database)
 
 	function checkAuth(req, res, next) {
 		if (req.session.u) next();
-		res.status(401).json({ status: 401, message: "You are not authorized." });
+		res.status(401).json({ status: 401, message: msg.ERR_NOTAUTHED });
 	}
 
 	cartRouter.route('/')
 		.get(checkAuth, (req, res) => {
 			CartModel.populate(req.session.cart, 'content.items', (e, doc) => {
+				if (e) {
+					res.status(500).json({ status: 500, message: msg.ERR_SERERROR });
+					return;
+				}
 				res.status(200).json(doc);
 			});
 		})
@@ -49,10 +54,17 @@ module.exports = function(database)
 			state: "Received"
 		});
 		newOrder.save((err, savedOrder) => {
+			if (err) {
+				res.status(500).json({ status: 500, message: msg.ERR_SERERROR });
+				return;
+			}
 			//TODO: call order processing function
 		});
 		UserModel.findByIdAndUpdate(req.session.cart._id, { content: [] }, (e, c) => {
-			if (e) res.status(500).json({ status: 500, message: "Server side error"});
+			if (e) {
+				res.status(500).json({ status: 500, message: msg.ERR_SERERROR });
+				return;
+			}
 			//TODO: payment logic - put dummy here
 			req.session.cart = c;
 			res.status(200).json(newOrder);

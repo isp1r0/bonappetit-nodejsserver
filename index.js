@@ -11,10 +11,13 @@ var config = require('./config.js'),
 app.set('config', config);
 
 var api_paths = {
-	user: require('./user/'),
-	vendor: require('./vendor/'),
-	dishes: require('./dish/'),
-	cart: require('./cart/')
+	user: require('./routes/user.js'),
+	//vendor: require('./routes/vendor.js'),
+	category: require('./routes/category.js'),
+	//dishes: require('./routes/dish.js'),
+	cart: require('./routes/cart.js'),
+	mall: require('./routes/mall.js'),
+	//order: require('./routes/order.js')
 };
 /**
  * @returns {Mongoose.connection}
@@ -56,13 +59,8 @@ app.use(errorHandler());
 app.use(uncapitalizer());
 app.use('/user', api_paths.user(database));
 app.use('/cart', api_paths.cart(database));
-/*app.use('/vendor', api_paths.vendor(database));
-app.use('/dish', api_paths.dish(database));
-app.use('/mall', ...);
-app.use('/ro/vendor', ...);
-app.use('/ro/dish', ...);
-app.use('/ro/mall', ...);
-*/
+app.use('/mall', api_paths.mall(database));
+app.use('/category', api_paths.category(database));
 
 if (config.http.tlsenabled) {
 	var https = require('https'),

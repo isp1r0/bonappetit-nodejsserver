@@ -1,23 +1,19 @@
 var cartRouter = require('express').Router(),
-	mongoose = require('mongoose'),
-	dataModels = require('../models/mongo_models.js');
+	mongoose = require('mongoose');
 
 module.exports = function(database)
 {
-	/*API URL routes:
+	/*
+	API URL routes:
 		GET /cart/					-> return cart
-		POST /cart/					-> add items to cart
+		PUT /cart/					-> modify cart (aka replace with new cart)
 			Input parameter: JSONObject( {dish_id, amount} )
-		PUT /cart/					-> modify items amount
-			Input parameter: JSONObject( {dish_id, amount} )
-		DELETE /cart/				-> remove items from cart
-			Input parameter: JSONObject( {dish_id} )
 		GET /cart/checkout			-> checkout the cart
 	*/
-	var UserModel = dataModels.userModel(database),
-		CartModel = dataModels.cartModel(database),
-		DishModel = dataModels.dishModel(database),
-		OrderModel = dataModels.orderModel(database);
+	var dataModels = require('../models/mongo_models.js')(database),
+		UserModel = dataModels.user,
+		CartModel = dataModels.cart,
+		OrderModel = dataModels.order;
 
 	function checkAuth(req, res, next) {
 		if (req.session.u) next();
@@ -30,19 +26,10 @@ module.exports = function(database)
 				res.status(200).json(doc);
 			});
 		})
-		.post(checkAuth, (req, res) => {
-			var newContent = req.session.cart.content;
-			for (dish in req.body.items) {
-				DishModel.count({_id: dish._id}, (e, cnt) => {
-					if (cnt) newContent.push({ item: new mongoose.Types.ObjectId(dish._id), amount: dish.amount });
-				});
-			}
-			req.session.cart.content = newContent;
-			res.status(200).json(req.session.cart);
-		})
 		.put(checkAuth, (req, res) => {
+			//TODO:rewrite
 			var newContent = req.session.cart.content;
-			for (dish in req.body.items) {
+			for (var dish in req.body.items) {
 				dish._id = new mongoose.Types.ObjectId(dish._id);
 				newContent = newContent.map(
 					function(e) {
@@ -52,16 +39,7 @@ module.exports = function(database)
 				);
 			}
 			req.session.cart.content = newContent;
-			res.status(200).json(req.session.cart);
-		})
-		.delete(checkAuth, (req, res) => {
-			var newContent = req.session.u.cart.content;
-			for (dish in req.body.items) {
-				dish._id = new mongoose.Types.ObjectId(dish._id);
-				newContent = newContent.filter(e => { return !(e._id == dish._id); });
-			}
-			req.session.u.cart = newContent;
-			res.status(200).json(req.session.cart);
+			res.status(200);
 		});
 	
 	cartRouter.get('/checkout', checkAuth, (req, res) => {
@@ -77,7 +55,7 @@ module.exports = function(database)
 			if (e) res.status(500).json({ status: 500, message: "Server side error"});
 			//TODO: payment logic - put dummy here
 			req.session.cart = c;
-			res.status(200).end();
+			res.status(200).json(newOrder);
 		});
 	});
 

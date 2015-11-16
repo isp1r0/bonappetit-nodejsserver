@@ -1,5 +1,4 @@
 var userRouter = require('express').Router(),
-	dataModels = require('../models/mongo_models.js'),
 	salt = require('../config').security.pwhashingsalt,
 	sha2hash = function(){ return new require('crypto').createHash('sha256'); };
 	
@@ -20,8 +19,9 @@ module.exports = function(database)
 		/user/favs
 	*/
 
-	var UserModel = dataModels.userModel(database);
-	var CartModel = dataModels.cartModel(database);
+	var	dataModels = require('../models/mongo_models.js')(database),
+		UserModel = dataModels.user,
+		CartModel = dataModels.cart;
 
 	function checkAuth(req, res, next) {
 		if (req.session && req.session.u) next();
@@ -34,7 +34,7 @@ module.exports = function(database)
 		//TODO: userdoc populate path
 		var completedUserJson = userdoc.toObject();
 		delete completedUserJson.pwhash;
-		if (typeof cartdoc == "undefined") CartModel.findById(userdoc.cart, (e, doc) => { cartdoc = doc; });
+		if (typeof cartdoc == "undefined") CartModel.findById(userdoc.cart).populate('content.item').exec((e, doc) => { cartdoc = doc; });
 		completedUserJson.cart = cartdoc.toObject();
 		return completedUserJson;
 	}
@@ -50,7 +50,7 @@ module.exports = function(database)
 		}
 		UserModel.findOne({ name: req.body.username }, '+pwhash', (e, au) => {
 			if (e) {
-				res.status(500).json({ status: 401, message: "Server side error" });
+				res.status(500).json({ status: 500, message: "Server side error" });
 				return;
 			}
 			if (sha2hash().update(req.body.password + salt).digest('hex') == au.pwhash) {
@@ -63,7 +63,6 @@ module.exports = function(database)
 	});
 
 	userRouter.get('/logout', checkAuth, (req, res) => {
-		CartModel.findByIdAndUpdate(req.session.u.cart, req.session.cart.content).exec();
 		req.session.destroy();
 		res.status(200).end();
 	});
@@ -92,14 +91,15 @@ module.exports = function(database)
 				]},
 				(err, doc) => {
 					if (doc) {
-						res.status(400).json({ status: 400, message: "User with specified username or email is exist." });
+						res.status(409).json({ status: 400, message: "User with specified username or email is exist." });
 						return;
 					}
 					var newUser = new UserModel({
-						name: req.body.username,
+						username: req.body.username,
+						name: req.body.name,
 						pwhash: sha2hash().update(req.body.password + salt).digest('hex'),
 						email: req.body.email,
-						createdate: Date.now(),
+						createdate: new Date().getTime(),
 						isvendor: false,
 						ownedshop: null,
 						favorites: { shop: [], dishes:[] },

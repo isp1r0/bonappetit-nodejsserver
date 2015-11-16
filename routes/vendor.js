@@ -18,7 +18,6 @@ module.exports = function(database) {
         res.status(401).json({ status: 401, message: "You are not authorized." });
     };
 
-    vendorRouter.route('/categories');
     vendorRouter.route('/');
 
     return vendorRouter;

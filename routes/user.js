@@ -51,6 +51,10 @@ module.exports = function(database)
 				return;
 			}
 			if (sha2hash().update(req.body.password + salt).digest('hex') == au.pwhash) {
+				if (req.body.gcmtoken != null) {
+					au.gcmtoken = req.body.gcmtoken;
+					au.save().exec();
+				}
 				DishModel.populate(au, 'cart.content.item', function (err, u) {
 					VendorModel.populate(u, 'cart.content.item.owner', function (err, u) {
 						DishModel.populate(u, 'cart.content.item.owner.dishes', function (err, u) {
@@ -114,7 +118,8 @@ module.exports = function(database)
 						isvendor: false,
 						ownedshop: null,
 						favorites: { shop: [], dishes:[] },
-						cart: null
+						cart: null,
+						gcmtoken: req.body.gcmtoken
 					});
 					var newCart = new CartModel({
 						owner: newUser._id,

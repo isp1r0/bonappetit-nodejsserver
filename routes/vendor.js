@@ -2,7 +2,7 @@ var vendorRouter = require('express').Router(),
 	mongoose = require('mongoose'),
 	msg = require('../messages.js');
 
-module.exports = function(database) {
+module.exports = function (database) {
 
 	var dataModels = require('../models/mongo_models.js')(database);
 	var UserModel = dataModels.user,
@@ -25,7 +25,8 @@ module.exports = function(database) {
 		}
 		res.status(401).json({status: 401, message: msg.ERR_OFFLIMITS});
 	};
-    vendorRouter.route('/');
 
-    return vendorRouter;
+	vendorRouter.route('/');
+
+	return vendorRouter;
 };

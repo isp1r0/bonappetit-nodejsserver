@@ -1,89 +1,90 @@
 var mongoose = require('mongoose');
 
 var UserSchema = new mongoose.Schema({
-	username: { type: String },
-	name: { type: String, unique: true },
-	pwhash: { type: String, select: false },
-	email: { type: String },
-	createdate: { type: Number },
-	isvendor: { type: Boolean },
-	ownedshop: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendors' },
+	username: {type: String},
+	name: {type: String, unique: true},
+	pwhash: {type: String, select: false},
+	email: {type: String},
+	createdate: {type: Number},
+	isvendor: {type: Boolean},
+	ownedshop: {type: mongoose.Schema.Types.ObjectId, ref: 'Vendors'},
 	favorites: {
-		shops: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Vendors' } ],
-		dishes: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Dishes' } ]
+		shops: [{type: mongoose.Schema.Types.ObjectId, ref: 'Vendors'}],
+		dishes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Dishes'}]
 	},
-	cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Carts' }
+	cart: {type: mongoose.Schema.Types.ObjectId, ref: 'Carts'},
+	gcmtoken: {type: String}
 });
 
 var CartSchema = new mongoose.Schema({
-	owner: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
+	owner: {type: mongoose.Schema.Types.ObjectId, ref: 'Users'},
 	content: [
 		{
-			item: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Dishes' },
-			amount: { type: Number, required: true }
+			item: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Dishes'},
+			amount: {type: Number, required: true}
 		}
 	]
 });
 
 var VendorSchema = new mongoose.Schema({
-	owner: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
-	name: { type: String },
-	category: { type: mongoose.Schema.Types.ObjectId, ref: 'Categories' },
-	description: { type: String },
+	owner: {type: mongoose.Schema.Types.ObjectId, ref: 'Users'},
+	name: {type: String},
+	category: {type: mongoose.Schema.Types.ObjectId, ref: 'Categories'},
+	description: {type: String},
 	pictures: [
-		{ type: String /* store base64'd pictures, prefer png */ }
+		{type: String /* store base64'd pictures, prefer png */}
 	],
 	dishes: [
-		{ type: mongoose.Schema.Types.ObjectId, ref: 'Dishes' }
+		{type: mongoose.Schema.Types.ObjectId, ref: 'Dishes'}
 	],
 	location: {
-		text: { type: String },
+		text: {type: String},
 		pointatmall: {
-			map: { type: mongoose.Schema.Types.ObjectId, ref: 'Malls' },
-			x: { type: Number },
-			y: { type: Number }
+			map: {type: mongoose.Schema.Types.ObjectId, ref: 'Malls'},
+			x: {type: Number},
+			y: {type: Number}
 		}
 	}
 });
 
 var DishSchema = new mongoose.Schema({
-	owner: { type: mongoose.Schema.Types.ObjectId, ref:'Vendors' },
-	name: { type: String },
-	description: { type: String },
+	owner: {type: mongoose.Schema.Types.ObjectId, ref: 'Vendors'},
+	name: {type: String},
+	description: {type: String},
 	picture: [
-		{ type: String }
+		{type: String}
 	],
-	price: { type: Number }
+	price: {type: Number}
 });
 
 var OrderSchema = new mongoose.Schema({
 	content: [
 		{
-			item: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Dishes' },
-			amount: { type: Number, required: true }
+			item: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Dishes'},
+			amount: {type: Number, required: true}
 		}
 	],
-	owner: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
-	state: { type: String }
+	owner: {type: mongoose.Schema.Types.ObjectId, ref: 'Users'},
+	state: {type: String}
 });
 
 var CategorySchema = new mongoose.Schema({
-	name: { type: String },
-	icon: { type: String }
+	name: {type: String},
+	icon: {type: String}
 });
 
 var MallSchema = new mongoose.Schema({
-	name: { type: String },
+	name: {type: String},
 	location: {
 		type: {type: String},
 		coordinates: {type: [Number], index: '2dsphere'}
 	},
 	maptile: {
-		image: { type: String },
-		northangle: { type: Number },
-		scale: { type: Number }
+		image: {type: String},
+		northangle: {type: Number},
+		scale: {type: Number}
 	},
-	beacondat: { type: String }
+	beacondat: {type: String}
 });
 
 module.exports = function (database) {

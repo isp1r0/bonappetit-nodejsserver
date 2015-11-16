@@ -4,23 +4,20 @@ var userRouter = require('express').Router(),
 		return new require('crypto').createHash('sha256');
 	},
 	msg = require('../messages.js');
-	
-module.exports = function(database)
-{
+
+module.exports = function (database) {
 	/*API URL routes:
-		POST /user/authenticate		-> login
-			Input parameters: JSONObject( {username, password} )
-		GET /user/logout			-> logout
+	 POST /user/authenticate		-> login
+	 Input parameters: JSONObject( {username, password, [gcmtoken]} )
+	 GET /user/logout			-> logout
 
-		GET /user/	 				-> return currently logged in user data
-		POST /user/ 				-> create new user
-			Input parameters: JSONObject( {username, password, email} )
-		PUT /user/				-> update user data
-			Input parameters: JSONObject( {currentpw, newpw, newemail} )
-		DELETE /user/				-> remove user
-
-		/user/favs
-	*/
+	 GET /user/	 				-> return currently logged in user data
+	 POST /user/ 				-> create new user
+	 Input parameters: JSONObject( {username, password, email} )
+	 PUT /user/				-> update user data
+	 Input parameters: JSONObject( {currentpw, newpw, newemail} )
+	 DELETE /user/				-> remove user
+	 */
 
 	var dataModels = require('../models/mongo_models.js')(database),
 		UserModel = dataModels.user,
@@ -100,10 +97,12 @@ module.exports = function(database)
 			}
 
 			UserModel.findOne(
-				{$or : [
-						{ name: req.body.username },
-						{ email: req.body.email }
-				]},
+				{
+					$or: [
+						{name: req.body.username},
+						{email: req.body.email}
+					]
+				},
 				(err, doc) => {
 					if (doc) {
 						res.status(409).json({status: 409, message: msg.ERR_USERALREADYEXIST});
@@ -117,7 +116,7 @@ module.exports = function(database)
 						createdate: new Date().getTime(),
 						isvendor: false,
 						ownedshop: null,
-						favorites: { shop: [], dishes:[] },
+						favorites: {shop: [], dishes: []},
 						cart: null,
 						gcmtoken: req.body.gcmtoken
 					});
@@ -167,7 +166,7 @@ module.exports = function(database)
 			res.redirect('/logout');
 		});
 
-	userRouter.route('/fav');
+	/*userRouter.route('/fav');*/
 
 	return userRouter;
 };

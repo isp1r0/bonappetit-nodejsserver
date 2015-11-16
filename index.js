@@ -19,21 +19,19 @@ var api_paths = {
 	mall: require('./routes/mall.js'),
 	//order: require('./routes/order.js')
 };
-/**
- * @returns {Mongoose.connection}
- */
-var database = function() {
+
+var database = function () {
 	var dbconnstring =
-	sprintf(
-		'mongodb://%s:%s@%s:%d/%s',
-		config.db.credential.user,
-		config.db.credential.password,
-		config.db.server,
-		config.db.port == 0 ? config.db.port : 27017,
-		config.db.dbname
-	);
+		sprintf(
+			'mongodb://%s:%s@%s:%d/%s',
+			config.db.credential.user,
+			config.db.credential.password,
+			config.db.server,
+			(config.db.port != '0') ? config.db.port : 27017,
+			config.db.dbname
+		);
 	var dboption = {
-		server: { socketOptions: { keepAlive: 1 } }
+		server: {socketOptions: {keepAlive: 1}}
 	};
 	var mongoose = require('mongoose');
 	return mongoose.connect(dbconnstring, dboption);
@@ -41,19 +39,19 @@ var database = function() {
 
 var sessionopt = config.session;
 sessionopt.cookie.secure = config.http.tlsenabled;
-sessionopt.store = (function() {
-		if (database && config.session.usedb) {
-				var MongoStore = require('connect-mongo')(session);
-				return new MongoStore({
-					mongooseConnection: database.connection,
-					touchAfter: 7*24*3600
-				});
-		} else return new session.MemoryStore();
-	})();
+sessionopt.store = (function () {
+	if (database && config.session.usedb) {
+		var MongoStore = require('connect-mongo')(session);
+		return new MongoStore({
+			mongooseConnection: database.connection,
+			touchAfter: 7 * 24 * 3600
+		});
+	} else return new session.MemoryStore();
+})();
 app.use(session(sessionopt));
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(slash());
 app.use(errorHandler());
 app.use(uncapitalizer());
@@ -75,6 +73,8 @@ if (config.http.tlsenabled) {
 		server = https.createServer(tlsopts, app);
 
 	server.listen(config.http.port);
+	console.log("Server is up.");
 } else {
 	app.listen(config.http.port);
+	console.log("Server is up.");
 }

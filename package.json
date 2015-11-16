@@ -9,7 +9,8 @@
   },
   "engines": { "node": ">=4.0.0" },
   "author": "",
-  "license": "ISC",
+  "license": "SEE LICENSE IN <LICENSE>",
+  "private": "true",
   "dependencies": {
     "express": "^4.13.1",
     "api-error-handler": "^1.0.0",

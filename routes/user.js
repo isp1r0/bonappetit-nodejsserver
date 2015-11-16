@@ -22,9 +22,11 @@ module.exports = function(database)
 		/user/favs
 	*/
 
-	var	dataModels = require('../models/mongo_models.js')(database),
+	var dataModels = require('../models/mongo_models.js')(database),
 		UserModel = dataModels.user,
-		CartModel = dataModels.cart;
+		CartModel = dataModels.cart,
+		DishModel = dataModels.dish,
+		VendorModel = dataModels.vendor;
 
 	function checkAuth(req, res, next) {
 		if (req.session && req.session.u) {

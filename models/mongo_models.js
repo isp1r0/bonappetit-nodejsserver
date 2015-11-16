@@ -86,10 +86,14 @@ var MallSchema = new mongoose.Schema({
 	beacondat: { type: String }
 });
 
-module.exports.userModel = function(database) { return database.model('Users', UserSchema, 'Users'); };
-module.exports.cartModel = function(database) { return database.model('Carts', CartSchema, 'Carts'); };
-module.exports.vendorModel = function(database) { return database.model('Vendors', VendorSchema, 'Vendors'); };
-module.exports.dishModel = function(database) { return database.model('Dishes', DishSchema, 'Dishes'); };
-module.exports.orderModel = function(database) { return database.model('Orders', OrderSchema, 'Orders'); };
-module.exports.categoryModel = function(database) { return database.model('Categories', CategorySchema, 'Categories'); };
-module.exports.mallModel = function(database) { return database.model('Malls', MallSchema, 'Malls'); };
+module.exports = function (database) {
+	return {
+		user: database.model('Users', UserSchema, 'Users'),
+		cart: database.model('Carts', CartSchema, 'Carts'),
+		vendor: database.model('Vendors', VendorSchema, 'Vendors'),
+		dish: database.model('Dishes', DishSchema, 'Dishes'),
+		order: database.model('Orders', OrderSchema, 'Orders'),
+		category: database.model('Categories', CategorySchema, 'Categories'),
+		mall: database.model('Malls', MallSchema, 'Malls')
+	};
+};

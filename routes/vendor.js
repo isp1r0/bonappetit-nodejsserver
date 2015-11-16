@@ -1,14 +1,14 @@
 var vendorRouter = require('express').Router(),
 	mongoose = require('mongoose'),
 	msg = require('../messages.js');
-    dataModels = require('../models/mongo_models.js');
 
 module.exports = function(database) {
 
-    var UserModel = dataModels.userModel(database),
-        VendorModel = dataModels.vendorModel(database),
-        DishModel = dataModels.dishModel(database),
-        OrderModel = dataModels.orderModel(database);
+	var dataModels = require('../models/mongo_models.js')(database);
+	var UserModel = dataModels.user,
+		VendorModel = dataModels.vendor,
+		DishModel = dataModels.dish,
+		OrderModel = dataModels.order;
 
 	function checkAuth(req, res, next) {
 		if (req.session.u) {

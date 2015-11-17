@@ -32,19 +32,15 @@ module.exports = function(database)
 			});
 		})
 		.put(checkAuth, (req, res) => {
-			//TODO:rewrite
-			var newContent = req.session.cart.content;
-			for (var dish in req.body.items) {
-				dish._id = new mongoose.Types.ObjectId(dish._id);
-				newContent = newContent.map(
-					function(e) {
-						if (e.item == dish._id) e.amount = dish.amount;
-						return e;
-					}
-				);
-			}
-			req.session.cart.content = newContent;
-			res.status(200);
+			CartModel.findByIdAndUpdate(req.session.cart._id, {content: req.body.content}, (e, c) => {
+				if (e) {
+					res.status(500).json({ status: 500, message: msg.ERR_SERERROR });
+					return;
+				}
+				req.session.cart = c;
+				req.session.save();
+				res.status(200);
+			});
 		});
 	
 	cartRouter.get('/checkout', checkAuth, (req, res) => {

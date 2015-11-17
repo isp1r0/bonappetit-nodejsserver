@@ -99,7 +99,7 @@ module.exports = function (database) {
 			UserModel.findOne(
 				{
 					$or: [
-						{name: req.body.username},
+						{username: req.body.username},
 						{email: req.body.email}
 					]
 				},
@@ -127,7 +127,7 @@ module.exports = function (database) {
 					newUser.cart = newCart._id;
 					newCart.save((e, c) => {
 						newUser.save((e, u) => {
-							req.session.cart = c.toObject();
+							req.session.cart = c;
 							req.session.u = u;
 							req.session.save();
 							var onu = u.toObject();

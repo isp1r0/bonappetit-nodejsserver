@@ -3,7 +3,6 @@ var config = require('./config.js'),
 	express = require('express'),
 	bodyParser = require('body-parser'),
 	errorHandler = require('api-error-handler'),
-	slash = require('express-slash'),
 	session = require('express-session'),
 	uncapitalizer = require('express-uncapitalize'),
 	app = express();
@@ -52,7 +51,6 @@ app.use(session(sessionopt));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(slash());
 app.use(errorHandler());
 app.use(uncapitalizer());
 app.use('/user', api_paths.user(database));

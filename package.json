@@ -17,7 +17,6 @@
     "body-parser": "^1.13.2",
     "connect-mongo": "^0.8.2",
     "express-session": "^1.11.3",
-    "express-slash": "^2.0.1",
     "express-uncapitalize": "^1.0.0",
     "mongoose": "^4.0.7",
     "sprintf-js": "^1.0.3"

@@ -118,7 +118,7 @@ module.exports = function (database) {
 						ownedshop: null,
 						favorites: {shop: [], dishes: []},
 						cart: null,
-						gcmtoken: req.body.gcmtoken
+						gcmtoken: ""
 					});
 					var newCart = new CartModel({
 						owner: newUser._id,

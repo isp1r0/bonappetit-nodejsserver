@@ -6,8 +6,7 @@ module.exports = function (database) {
 	var datamodels = require('../models/mongo_models.js')(database);
 
 	var CategoryModel = datamodels.category,
-		VendorModel = datamodels.vendor,
-		DishModel = datamodels.dish;
+		VendorModel = datamodels.vendor;
 
 	function checkAuth(req, res, next) {
 		if (req.session && req.session.u) {
@@ -29,9 +28,9 @@ module.exports = function (database) {
 
 	categoryRouter.get('/:id/vendors', checkAuth, (req, res) => {
 		VendorModel
-			.find({category: new ObjectId(req.params.id)})
-			.populate('dishes location.pointatmall.map')
-			.lean().exec(
+			.find({category: req.params.id})
+			.populate('dishes')
+			.exec(
 			(err, vs) => {
 				if (err) {
 					res.status(500).json({status: 500, message: msg.ERR_SERERROR});

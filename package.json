@@ -19,6 +19,7 @@
     "express-session": "^1.11.3",
     "express-uncapitalize": "^1.0.0",
     "mongoose": "^4.0.7",
-    "sprintf-js": "^1.0.3"
+    "sprintf-js": "^1.0.3",
+    "compression": "^1.6.0"
   }
 }

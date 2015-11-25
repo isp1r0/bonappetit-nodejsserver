@@ -1,5 +1,7 @@
 var cartRouter = require('express').Router(),
 	mongoose = require('mongoose'),
+	gcm = require('node-gcm'),
+	gcmkey = require('../config').gcm.key,
 	msg = require('../messages.js');
 
 module.exports = function(database)
@@ -55,7 +57,12 @@ module.exports = function(database)
 				res.status(500).json({ status: 500, message: msg.ERR_SERERROR });
 				return;
 			}
-			//TODO: call order processing function
+			var msg = new gcm.Message();
+			msg.addData('method', 'add');
+			msg.addData('oid', savedOrder._id);
+			msg.addData('state', 'ISSUED');
+			gcm.Sender(gcmkey);
+
 		});
 		UserModel.findByIdAndUpdate(req.session.cart._id, { content: [] }, (e, c) => {
 			if (e) {

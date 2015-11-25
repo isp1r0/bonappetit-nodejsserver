@@ -16,7 +16,7 @@ module.exports = function (database) {
 		res.status(401).json({status: 401, message: msg.ERR_NOTAUTHED});
 	}
 
-	categoryRouter.get('/list', checkAuth, (req, res) => {
+	categoryRouter.get('/list/', checkAuth, (req, res) => {
 		CategoryModel.find({}, (err, cats) => {
 			if (err) {
 				res.status(500).json({status: 500, message: msg.ERR_SERERROR});
@@ -26,7 +26,7 @@ module.exports = function (database) {
 		});
 	});
 
-	categoryRouter.get('/:id/vendors', checkAuth, (req, res) => {
+	categoryRouter.get('/:id/vendors/', checkAuth, (req, res) => {
 		VendorModel
 			.find({category: req.params.id})
 			.populate('dishes')

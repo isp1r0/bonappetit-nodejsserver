@@ -5,5 +5,6 @@ module.exports = {
 	ERR_CREDINVALID: "Credential invalid.",
 	ERR_USERALREADYEXIST: "User with specified username or email is exist.",
 	ERR_NOMALLNEARBY: "You are not near any of our malls.",
-	ERR_INVALIDLOC: "You supplied a invalid geo-coordinate."
+	ERR_INVALIDLOC: "You supplied a invalid geo-coordinate.",
+	GCM_SUBSCRIBE_SUCCESS: "GCM Token registed"
 };

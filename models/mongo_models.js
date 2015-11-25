@@ -58,6 +58,7 @@ var DishSchema = new mongoose.Schema({
 });
 
 var OrderSchema = new mongoose.Schema({
+	oid: {type:Number},
 	content: [
 		{
 			item: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Dishes'},
@@ -65,7 +66,8 @@ var OrderSchema = new mongoose.Schema({
 		}
 	],
 	owner: {type: mongoose.Schema.Types.ObjectId, ref: 'Users'},
-	state: {type: String}
+	state: {type: Number},
+	time: {type: Number}
 });
 
 var CategorySchema = new mongoose.Schema({

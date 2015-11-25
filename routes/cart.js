@@ -47,7 +47,8 @@ module.exports = function(database)
 		var newOrder = new OrderModel({
 			content: req.session.cart.content,
 			owner: req.session.u._id,
-			state: "Received"
+			state: 0,
+			time: new Date().getTime();
 		});
 		newOrder.save((err, savedOrder) => {
 			if (err) {

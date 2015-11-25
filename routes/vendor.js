@@ -24,7 +24,7 @@ module.exports = function (database) {
 			return;
 		}
 		res.status(401).json({status: 401, message: msg.ERR_OFFLIMITS});
-	};
+	}
 
 	vendorRouter.route('/');
 

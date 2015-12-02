@@ -17,7 +17,8 @@ var api_paths = {
 	//dishes: require('./routes/dish.js'),
 	cart: require('./routes/cart.js'),
 	mall: require('./routes/mall.js'),
-	//order: require('./routes/order.js')
+	order: require('./routes/order.js'),
+	gcm: require('./routes/gcm.js')
 };
 
 var database = function() {
@@ -59,6 +60,8 @@ app.use('/user', api_paths.user(database));
 app.use('/cart', api_paths.cart(database));
 app.use('/mall', api_paths.mall(database));
 app.use('/category', api_paths.category(database));
+app.use('/order', api_paths.order(database));
+app.use('/gcm', api_paths.gcm(database));
 
 if (config.http.tlsenabled) {
 	var https = require('https'),

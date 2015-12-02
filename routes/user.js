@@ -71,22 +71,7 @@ module.exports = function (database) {
 
 	userRouter.route('/')
 		.get(checkAuth, (req, res) => {
-			UserModel.findById(req.session.u._id).populate('cart').exec((e, ru) => {
-				if (e) {
-					res.status(500).json({status: 500, message: msg.ERR_SERERROR});
-					return;
-				}
-				DishModel.populate(ru, 'cart.content.item', function (err, u) {
-					VendorModel.populate(u, 'cart.content.item.owner', function (err, u) {
-						DishModel.populate(u, 'cart.content.item.owner.dishes', function (err, u) {
-							req.session.u = u;
-							req.session.cart = u.cart;
-							req.session.save();
-							res.status(200).json(u);
-						});
-					});
-				});
-			});
+			res.status(200).json(req.session.u);
 		})
 		.post((req, res) => {
 			if (req.session && req.session.u) {

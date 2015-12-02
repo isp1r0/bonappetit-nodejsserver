@@ -34,17 +34,10 @@ module.exports = function (database) {
 	});
 
 	mallRouter.get('/:id', checkAuth, (req, res) => {
-		MallModel
-		/*.geoNear(
-		 { type: "Point", coordinates: [req.query.long, req.query.lat] },
-		 { maxDistance: geoDistLimit, spherical: true }
-		 ).then(*/
-				.findById(req.params.id).exec(
-				(err, m, stats) => {
-					if (!m) res.status(404).json({status: 404, message: msg.ERR_NOMALLNEARBY});
-					res.status(200).json(m);
-				}
-		);
+		MallModel.findById(req.params.id).exec((err, m, stats) => {
+			if (!m) res.status(404).json({status: 404, message: msg.ERR_NOMALLNEARBY});
+			res.status(200).json(m);
+		});
 	});
 
 

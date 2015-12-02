@@ -43,10 +43,15 @@ module.exports = function (database) {
 					return;
 				}
 				var msg = gcm.Message();
-				msg.addData('method', 'remove');
-				msg.addData('oid', req.params.id);
-				msg.addData('state', '');
-				gcmSender.send(msg, { registationTokens: [o.owner.]})
+				msg.addData({
+					type: 'order-update',
+					method: 'remove',
+					oid: o.oid,
+					state: o.state,
+					notification_text: ''//TODO:fill me
+				});
+				gcmSender.send(msg, o.owner.gcmtoken);
+				res.status(200).end();
 			});
 		})
 		.get('/ack', checkAuth, vendorOnly, (req, res) => {
@@ -55,7 +60,18 @@ module.exports = function (database) {
 					res.status(500).json({status: 500, message: msg.ERR_SERERROR});
 					return;
 				}
-
+				o.state = 1;
+				o.save();
+				var msg = gcm.Message();
+				msg.addData({
+					type: 'order-update',
+					method: 'update',
+					oid: o.oid,
+					state: 1,
+					notification_text: ''//TODO:fill me
+				});
+				gcmSender.send(msg, o.owner.gcmtoken);
+				res.status(200).end();
 			});
 		})
 		.get('/ready', checkAuth, vendorOnly, (req, res) => {
@@ -64,9 +80,19 @@ module.exports = function (database) {
 					res.status(500).json({status: 500, message: msg.ERR_SERERROR});
 					return;
 				}
-
+				o.state = 2;
+				o.save();
+				var msg = gcm.Message();
+				msg.addData({
+					type: 'order-update',
+					method: 'update',
+					oid: o.oid,
+					state: 2,
+					notification_text: ''//TODO:fill me
+				});
+				gcmSender.send(msg, o.owner.gcmtoken);
+				res.status(200).end();
 			});
-
 		})
 		.get('/delivered', checkAuth, vendorOnly, (req, res) => {
 			OrderModel.findById(req.params.id, (err, o) => {
@@ -74,13 +100,25 @@ module.exports = function (database) {
 					res.status(500).json({status: 500, message: msg.ERR_SERERROR});
 					return;
 				}
-
+				var msg = gcm.Message();
+				msg.addData({
+					type: 'order-update',
+					method: 'update',
+					oid: o.oid,
+					state: 3,
+					notification_text: ''//TODO:fill me
+				});
+				gcmSender.send(msg, o.owner.gcmtoken);
+				res.status(200).end();
 			});
-
 		});
 
 	OrderRouter.get('/', checkAuth, (req, res) => {
-
+		//Find all order from a user
+		//This route should be use only on startup of ReviewOrderActivity
+		//  or VendorAdminActivity if somehow the app reboots
+		//Returns at most 15 orders within 7 days should be a reasonable limit
+		//Vendors should return any order which state < 3 (i.e. order in process)
 	});
 
 	return OrderRouter;

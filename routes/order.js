@@ -1,10 +1,8 @@
 var OrderRouter = require('express').Router(),
-	gcm = require('node-gcm'),
 	gcmkey = require('../config').gcm.key,
+	gcmSender = new require('node-gcm').Sender(gcmkey),
 	mongoose = require('mongoose'),
-	msg = require('../message.js');
-
-var gcmSender = new gcm.Sender(gcmkey);
+	msg = require('../messages.js');
 
 module.exports = function (database) {
 	var dataModels = require('../models/mongo_models.js')(database),

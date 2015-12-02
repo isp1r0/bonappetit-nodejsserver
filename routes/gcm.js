@@ -15,6 +15,7 @@ module.exports = function (database) {
 	}
 
 	gcmRouter.post('/subscribe', checkAuth, (req, res) => {
+		//TODO: send a test message to verify token
 		req.session.u.gcmtoken = req.body.gcmtoken;
 		req.session.u.save().exec((req, res) => {
 			res.status(200).json({status:200, message:msg.GCM_SUBSCRIBE_SUCCESS});

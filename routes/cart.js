@@ -1,7 +1,7 @@
 var cartRouter = require('express').Router(),
 	mongoose = require('mongoose'),
-	gcm = require('node-gcm'),
 	gcmkey = require('../config').gcm.key,
+	gcmSender = new require('node-gcm').Sender(gcmkey),
 	msg = require('../messages.js');
 
 module.exports = function (database) {

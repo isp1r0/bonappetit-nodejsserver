@@ -66,8 +66,7 @@ var OrderSchema = new mongoose.Schema({
 		}
 	],
 	owner: {type: mongoose.Schema.Types.ObjectId, ref: 'Users'},
-	state: {type: Number},
-	time: {type: Number}
+	state: {type: Number}
 });
 
 var CategorySchema = new mongoose.Schema({

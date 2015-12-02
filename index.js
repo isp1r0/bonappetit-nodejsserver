@@ -52,7 +52,7 @@ app.use(session(sessionopt));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(compression());
+app.use(compression({}));
 app.use(errorHandler());
 app.use(uncapitalizer());
 app.use('/user', api_paths.user(database));

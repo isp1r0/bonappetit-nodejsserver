@@ -20,7 +20,7 @@ var api_paths = {
 	//order: require('./routes/order.js')
 };
 
-var database = function () {
+var database = function() {
 	var dbconnstring =
 		sprintf(
 			'mongodb://%s:%s@%s:%d/%s',
@@ -39,7 +39,7 @@ var database = function () {
 
 var sessionopt = config.session;
 sessionopt.cookie.secure = config.http.tlsenabled;
-sessionopt.store = (function () {
+sessionopt.store = (function() {
 	if (database && config.session.usedb) {
 		var MongoStore = require('connect-mongo')(session);
 		return new MongoStore({

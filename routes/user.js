@@ -1,8 +1,6 @@
 var userRouter = require('express').Router(),
 	salt = require('../config').security.pwhashingsalt,
-	sha2hash = function () {
-		return new require('crypto').createHash('sha256');
-	},
+	sha2hash = () => { return new require('crypto').createHash('sha256'); },
 	msg = require('../messages.js');
 
 module.exports = function (database) {

@@ -20,10 +20,11 @@ module.exports = function (database) {
 			res.status(200).json({status:200, message:msg.GCM_SUBSCRIBE_SUCCESS});
 		});
 	});
+
 	gcmRouter.get('/unsubscribe', checkAuth, (req, res) => {
 		req.session.u.gcmtoken = null;
 		req.session.u.save().exec((req, res) => {
 			res.status(200).json({status:200, message:"GCM Token deauth success"});
 		})
 	});
-}
+};

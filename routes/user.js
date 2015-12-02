@@ -50,12 +50,13 @@ module.exports = function (database) {
 					au.gcmtoken = req.body.gcmtoken;
 					au.save().exec();
 				}
+				delete au.pwhash;
+				req.session.u = au;
+				req.session.cart = au.cart;
+				req.session.save();
 				DishModel.populate(au, 'cart.content.item', function (err, u) {
 					VendorModel.populate(u, 'cart.content.item.owner', function (err, u) {
 						DishModel.populate(u, 'cart.content.item.owner.dishes', function (err, u) {
-							delete u.pwhash;
-							req.session.u = u;
-							req.session.cart = u.cart;
 							res.status(200).json(u);
 						});
 					});
@@ -110,12 +111,11 @@ module.exports = function (database) {
 					newUser.cart = newCart._id;
 					newCart.save((e, c) => {
 						newUser.save((e, u) => {
-							req.session.cart = c;
-							req.session.u = u;
-							req.session.save();
-							var onu = u.toObject();
-							onu.cart = c.toObject();
-							res.status(201).json(onu);
+							var confirmeduser = {
+								id: u._id,
+								username: u.username
+							};
+							res.status(201).json(confirmeduser);
 						});
 					});
 				}

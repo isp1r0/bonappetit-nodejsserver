@@ -33,7 +33,10 @@ module.exports = function (database) {
 			});
 		})
 		.put(checkAuth, (req, res) => {
-			CartModel.findByIdAndUpdate(req.session.cart._id, {content: req.body.content}, (e, c) => {
+			//content being PUT here is only ids of dishes, need to translate back to object ref first
+			var newcontent = req.body.content;
+			newcontent.forEach((e, i, a) => e.item = new mongoose.Schema.Types.ObjectId(e.item));
+			CartModel.findByIdAndUpdate(req.session.cart._id, {content: newcontent}, (e, c) => {
 				if (e) {
 					res.status(500).json({status: 500, message: msg.ERR_SERERROR});
 					return;

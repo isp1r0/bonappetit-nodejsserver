@@ -18,7 +18,7 @@
     "connect-mongo": "^0.8.2",
     "express-session": "^1.11.3",
     "express-uncapitalize": "^1.0.0",
-    "mongoose": "^4.0.7",
+    "mongoose": "^5.3.9",
     "sprintf-js": "^1.0.3",
     "compression": "^1.6.0",
     "node-gcm": "^0.12.1"
